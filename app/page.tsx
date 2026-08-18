@@ -296,7 +296,7 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-
+ 
         {/* <YearlyTrend year={year} categories={categories} expenses={expenses} /> */}
       </div>
     </AppShell>
