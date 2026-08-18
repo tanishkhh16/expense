@@ -173,8 +173,7 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.3} vertical={false} />
                   <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#9ca3af" />
                   <YAxis tick={{ fontSize: 11 }} stroke="#9ca3af" />
-                  <Tooltip formatter={(value: number) => `₹${value}`} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
-                  <Bar dataKey="expense" fill="#6366F1" radius={[6, 6, 0, 0]} />
+<Tooltip formatter={(value) => `₹${Number(value)}`} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />                  <Bar dataKey="expense" fill="#6366F1" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -291,8 +290,7 @@ export default function Dashboard() {
                   <Pie data={categoryBreakdown.map((c) => ({ name: c.category.name, value: c.total }))} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={55} outerRadius={90} paddingAngle={3}>
                     {categoryBreakdown.map((c) => (<Cell key={c.category.id} fill={c.category.color} />))}
                   </Pie>
-                  <Tooltip formatter={(value: number) => `₹${value.toFixed(2)}`} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
-                  <Legend />
+<Tooltip formatter={(value) => `₹${Number(value).toFixed(2)}`} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </div>
