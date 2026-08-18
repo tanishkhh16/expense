@@ -8,7 +8,6 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Ba
 import AppShell from '@/components/AppShell'
 import SavingsGoalCard from '@/components/SavingsGoalCard'
 import CategoryCard from '@/components/CategoryCard'
-// import YearlyTrend from '@/components/YearlyTrend'
 
 const ICONS: Record<string, string> = {
   rent: '🏠', travel: '✈️', food: '🍽️', grocery: '🛒', groceries: '🛒',
@@ -22,7 +21,7 @@ export default function Dashboard() {
   const [income, setIncome] = useState<Income[]>([])
   const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>([])
   const [loading, setLoading] = useState(true)
-  const [view, setView] = useState<'monthly' | 'daily'>('monthly')
+  const [view, setView] = useState<'monthly' | 'daily' | 'all'>('monthly')
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0])
 
   const today = new Date()
@@ -64,7 +63,9 @@ export default function Dashboard() {
         remark: e.remark,
         amount: view === 'monthly'
           ? getMonthPortion(e.total_amount, e.start_date, e.end_date, year, month)
-          : getDayPortion(e.total_amount, e.start_date, e.end_date, selectedDate),
+          : view === 'daily'
+          ? getDayPortion(e.total_amount, e.start_date, e.end_date, selectedDate)
+          : e.total_amount,
       }))
       .filter((item) => item.amount > 0)
     const total = items.reduce((sum, item) => sum + item.amount, 0)
@@ -129,6 +130,7 @@ export default function Dashboard() {
             <div className="flex gap-1 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-lg p-1">
               <button onClick={() => setView('monthly')} className={`px-3 py-1 rounded-md text-sm font-medium transition ${view === 'monthly' ? 'bg-indigo-600 text-white' : 'text-gray-600 dark:text-gray-400'}`}>Monthly</button>
               <button onClick={() => setView('daily')} className={`px-3 py-1 rounded-md text-sm font-medium transition ${view === 'daily' ? 'bg-indigo-600 text-white' : 'text-gray-600 dark:text-gray-400'}`}>Daily</button>
+              <button onClick={() => setView('all')} className={`px-3 py-1 rounded-md text-sm font-medium transition ${view === 'all' ? 'bg-indigo-600 text-white' : 'text-gray-600 dark:text-gray-400'}`}>All</button>
             </div>
             {view === 'monthly' ? (
               <div className="flex items-center gap-1">
@@ -136,8 +138,10 @@ export default function Dashboard() {
                 <span className="font-medium text-gray-800 dark:text-gray-200 w-32 text-center text-sm">{monthNames[month]} {year}</span>
                 <button onClick={() => changeMonth(1)} className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-600 dark:text-gray-400">›</button>
               </div>
-            ) : (
+            ) : view === 'daily' ? (
               <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 text-sm" />
+            ) : (
+              <span className="text-sm text-gray-400 dark:text-gray-500 px-2">All time</span>
             )}
           </div>
         </div>
@@ -173,7 +177,8 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.3} vertical={false} />
                   <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#9ca3af" />
                   <YAxis tick={{ fontSize: 11 }} stroke="#9ca3af" />
-<Tooltip formatter={(value) => `₹${Number(value)}`} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />                  <Bar dataKey="expense" fill="#6366F1" radius={[6, 6, 0, 0]} />
+                  <Tooltip formatter={(value) => `₹${Number(value)}`} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
+                  <Bar dataKey="expense" fill="#6366F1" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -290,14 +295,13 @@ export default function Dashboard() {
                   <Pie data={categoryBreakdown.map((c) => ({ name: c.category.name, value: c.total }))} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={55} outerRadius={90} paddingAngle={3}>
                     {categoryBreakdown.map((c) => (<Cell key={c.category.id} fill={c.category.color} />))}
                   </Pie>
-<Tooltip formatter={(value) => `₹${Number(value).toFixed(2)}`} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />                  <Legend />
+                  <Tooltip formatter={(value) => `₹${Number(value).toFixed(2)}`} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} />
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </div>
           </div>
         )}
- 
-        {/* <YearlyTrend year={year} categories={categories} expenses={expenses} /> */}
       </div>
     </AppShell>
   )
